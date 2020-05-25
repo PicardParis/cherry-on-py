@@ -1,0 +1,5 @@
+# https://pypi.org/project/google-cloud-storage/
+google-cloud-storage==1.28.1
+
+# https://pypi.org/project/google-cloud-videointelligence/
+google-cloud-videointelligence==1.14.0
