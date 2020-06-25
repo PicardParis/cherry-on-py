@@ -37,7 +37,6 @@ def launch_shot_detection(video_uri: str, annot_bucket: str):
     video_client.annotate_video(input_uri=video_uri,
                                 features=features,
                                 output_uri=annot_uri)
-    return annot_uri
 
 
 def gcf_detect_shots(data, context):
