@@ -1,0 +1,11 @@
+# https://pypi.org/project/google-cloud-storage/
+google-cloud-storage==1.29.0
+
+# https://pypi.org/project/google-cloud-videointelligence/
+google-cloud-videointelligence==1.15.0
+
+# https://pypi.org/project/opencv-python-headless/
+opencv-python-headless==4.2.0.34
+
+# https://pypi.org/project/Pillow/
+Pillow==7.1.2
