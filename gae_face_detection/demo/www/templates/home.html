@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Face Detection Demo</title>
+    <meta name="Description" content="Face detection demo for Google Cloud machine learning Vision API">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
+</head>
+
+<body>
+    <fieldset id="input-source">
+        <legend>Image Source</legend>
+        <div class="input-sources">
+            <label><input type="radio" name="input-source" id="source-test-image" />Test</label>
+            <label><input type="radio" name="input-source" id="source-custom-image" />Custom</label>
+            <label><input type="radio" name="input-source" id="source-camera" />Camera</label>
+        </div>
+        <div id="test-image-input" hidden>
+            <div id="test-images">
+                {% for image in images %}
+                <label><input type="radio" name="test-image" value="{{ image }}">Test {{ loop.index }}</label>
+                {% endfor %}
+            </div>
+        </div>
+        <div id="custom-image-input" hidden>
+            <div id="drop-zone" class="drop-zone-idle">⬆️ Select or drop your image</div>
+        </div>
+        <div id="camera-input" hidden>
+            <div id="start-camera">▶️ Start your camera and send a selfie</div>
+        </div>
+    </fieldset>
+
+    <fieldset id="result-image-options">
+        <legend>Options</legend>
+        <label id="webp-label" hidden><input type="radio" name="image-format" id="webp">WebP</label>
+        <label><input type="radio" name="image-format" id="png">PNG</label>
+        <label><input type="radio" name="image-format" id="gif">GIF</label>
+        &nbsp;|&nbsp;
+        <label><input type="checkbox" id="show-logs">Show logs</label>
+        <br>
+        <label><input type="radio" name="image-options" id="still">Still image</label>
+        <label><input type="radio" name="image-options" id="animated">Animated image</label>
+        <br>
+        <div id="still-image-options" hidden>
+            <label><input type="checkbox" id="landmarks">Landmarks</label>
+            <label><input type="checkbox" id="anonymize">Anonymize</label>
+            <label><input type="checkbox" id="stache">Moustache</label>
+        </div>
+        <div id="animated-image-options" hidden>
+            <label><input type="radio" name="animation" id="oscillating">Oscillating moustache</label>
+            <label><input type="radio" name="animation" id="bouncing">Bouncing moustache</label>
+        </div>
+        <label><input type="checkbox" id="crop-faces">Crop faces</label>
+        <label><input type="checkbox" id="crop-image">Crop image</label>
+    </fieldset>
+
+    <fieldset id="logs" hidden>
+        <legend>Logs</legend>
+        <div id="log-entries"></div>
+    </fieldset>
+
+    <fieldset id="result" hidden>
+        <legend id="result-legend">Result</legend>
+        <div id="result-container">
+            <button input="button" id="button-copy-to-clipboard" title="Copy to clipboard" hidden>📋</button>
+            <button input="button" id="button-download-image" title="Download" hidden>📥</button>
+            <img id="result-image">
+        </div>
+    </fieldset>
+
+    <div id="overlay" hidden>
+        <div id="overlay-content">
+            <video id="camera" playsinline></video>
+            <button type="button" id="button-selfie">📷</button>
+        </div>
+        <a id="overlay-close">&times;</a>
+    </div>
+</body>
+
+</html>
