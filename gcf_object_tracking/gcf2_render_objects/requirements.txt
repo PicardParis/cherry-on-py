@@ -8,4 +8,4 @@ google-cloud-videointelligence==1.15.0
 opencv-python-headless==4.2.0.34
 
 # https://pypi.org/project/Pillow/
-Pillow==7.1.2
+Pillow==8.2.0
