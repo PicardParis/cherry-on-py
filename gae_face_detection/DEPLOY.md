@@ -93,13 +93,13 @@ Deployed service [default] to [https://PROJECT_ID.REGION_ID.r.appspot.com]
 
 You can also handle cloud resources in the GUI ([Cloud Console](https://console.cloud.google.com/appengine/versions)):
 
-![App Engine screenshot](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/app_engine.png)
+![App Engine screenshot](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/app_engine.png)
 
 ## 🎉 Production test
 
 The web app is ready. Open the `appspot.com` URL:
 
-![Demo screenshot](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/face_detection_demo.png)
+![Demo screenshot](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/face_detection_demo.png)
 
 Check the latest logs:
 

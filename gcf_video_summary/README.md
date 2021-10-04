@@ -14,7 +14,7 @@ Dear developers,
 
 Here is a visual summary example, generated from a 2'42" video made of 35 sequences (shots):
 
-![Video summary example](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/JaneGoodall.mp4.summary035_still.jpeg)
+![Video summary example](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/JaneGoodall.mp4.summary035_still.jpeg)
 
 > Note: The summary is a grid where each cell is a frame representing a video shot.
 
@@ -42,7 +42,7 @@ A few tools are enough:
 
 Here is a possible architecture using 3 Google Cloud services ([Cloud Storage](https://cloud.google.com/storage/docs), [Cloud Functions](https://cloud.google.com/functions/docs), and [Video Intelligence API](https://cloud.google.com/video-intelligence/docs)):
 
-> ![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/architecture_1.png)
+> ![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/architecture_1.png)
 
 The processing pipeline follows these steps:
 
@@ -157,7 +157,7 @@ Creating gs://SUMMARY_BUCKET/...
 
 You can check how it looks like in the [Cloud Console](https://console.cloud.google.com/storage/browser):
 
-![Cloud Storage buckets](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/buckets.png)
+![Cloud Storage buckets](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/buckets.png)
 
 ### Service account
 
@@ -340,13 +340,13 @@ if __name__ == '__main__':
 Test the function:
 
 ```bash
-VIDEO_PATH="cloudmleap/video/next/gbikes_dinosaur.mp4"
+VIDEO_PATH="cloud-samples-data/video/gbikes_dinosaur.mp4"
 VIDEO_URI="gs://$VIDEO_PATH"
 python $PROJECT_SRC/gcf1_detect_shots/main.py $VIDEO_URI
 ```
 
 ```text
-Launching shot detection for <gs://cloudmleap/video/next/gbikes_dinosaur.mp4>...
+Launching shot detection for <gs://cloud-samples-data/video/gbikes_dinosaur.mp4>...
 ```
 
 > Note: The test video `<gbikes_dinosaur.mp4>` is located in an external bucket. This works because the video is publicly accessible.
@@ -453,7 +453,7 @@ versionId: '1'
 
 Here is how it looks like in the [Cloud Console](https://console.cloud.google.com/functions/list):
 
-![Cloud Functions](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/functions.png)
+![Cloud Functions](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/functions.png)
 
 ### Production tests
 
@@ -468,7 +468,7 @@ gsutil cp $SRC_URI $DST_URI
 ```
 
 ```text
-Copying gs://cloudmleap/video/next/gbikes_dinosaur.mp4 [Content-Type=video/mp4]...
+Copying gs://cloud-samples-data/video/gbikes_dinosaur.mp4 [Content-Type=video/mp4]...
 - [1 files][ 62.0 MiB/ 62.0 MiB]
 Operation completed over 1 objects/62.0 MiB.
 ```
@@ -910,7 +910,7 @@ versionId: '1'
 
 Here is how it looks like in the [Cloud Console](https://console.cloud.google.com/functions/list):
 
-![Cloud Functions 2](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/functions2.png)
+![Cloud Functions 2](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/functions2.png)
 
 ### Production tests
 
@@ -957,11 +957,11 @@ cloudshell download *.jpeg
 
 Here is the visual summary for `gbikes_dinosaur.mp4` (4 detected shots):
 
-![Visual summary for gbikes_dinosaur.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/gbikes_dinosaur.mp4.summary004.jpeg)
+![Visual summary for gbikes_dinosaur.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/gbikes_dinosaur.mp4.summary004.jpeg)
 
 You can also directly preview the file from the [Cloud Console](https://console.cloud.google.com/storage/browser/):
 
-![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/bucket_preview.png)
+![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/bucket_preview.png)
 
 ***
 
@@ -982,7 +982,7 @@ Now, the icing on the cake (or the "cherry on the pie" as we say in French)...
 
 ### Architecture (v2)
 
-![Architecture (v2)](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/architecture_2.png)
+![Architecture (v2)](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/architecture_2.png)
 
 - A. Video shot detection can also be triggered manually with an HTTP GET request
 - B. Still and animated summaries are generated in 2 functions in parallel
@@ -1027,7 +1027,7 @@ gcloud functions deploy $GCF_NAME \
 
 Here is how it looks like in the [Cloud Console](https://console.cloud.google.com/functions/list):
 
-![Cloud Functions 3](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/functions3.png)
+![Cloud Functions 3](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/functions3.png)
 
 ### Animation support
 
@@ -1198,7 +1198,7 @@ gcloud functions deploy $GCF_NAME \
 
 Here is how it looks like in the [Cloud Console](https://console.cloud.google.com/functions/list):
 
-![Cloud Functions 4](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/functions4.png)
+![Cloud Functions 4](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/functions4.png)
 
 ## 🎉 Final tests
 
@@ -1220,7 +1220,7 @@ Launched shot detection for video_uri <VIDEO_URI>
 
 In addition, copy one or several videos into the video bucket. You can drag and drop videos:
 
-![Dragging files to a bucket](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/dragndrop.gif)
+![Dragging files to a bucket](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/dragndrop.gif)
 
 The videos are then processed in parallel. Here are a few logs:
 
@@ -1244,11 +1244,11 @@ D     gcf2_generate_summary_animated i3u830hsjz4r ... Function execution took 70
 
 In the 3rd bucket, you'll find all still and animated summaries:
 
-![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/bucket_details.png)
+![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/bucket_details.png)
 
-You've already seen the still summary for `<JaneGoodall.mp4>` as an introduction to this tutorial. In the animated version, and in only 6 frames, you get an even better idea of what the [whole video](https://storage.googleapis.com/cloudmleap/video/next/JaneGoodall.mp4) is about:
+You've already seen the still summary for `<JaneGoodall.mp4>` as an introduction to this tutorial. In the animated version, and in only 6 frames, you get an even better idea of what the [whole video](https://storage.googleapis.com/cloud-samples-data/video/JaneGoodall.mp4) is about:
 
-![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_video_summary/pics/JaneGoodall.mp4.summary035_anim.gif)
+![Video summary](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/JaneGoodall.mp4.summary035_anim.gif)
 
 If you don't want to keep your project, you can delete it:
 

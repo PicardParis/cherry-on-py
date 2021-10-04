@@ -11,7 +11,7 @@ In this article, following up on the previous one ("Video summary as a service")
 
 Here is an example of an auto-generated object summary for the video [<animals.mp4>](https://storage.googleapis.com/cloudmleap/video/next/animals.mp4):
 
-![Tracked object summary for animals.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/animals.mp4.summary_pct70_fr10.jpeg)
+![Tracked object summary for animals.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.summary_pct70_fr10.jpeg)
 
 ## 🛠️ Tools
 
@@ -27,7 +27,7 @@ A few tools will do:
 
 Here is a possible architecture using 3 Google Cloud services ([Cloud Storage](https://cloud.google.com/storage/docs), [Cloud Functions](https://cloud.google.com/functions/docs), and the [Video Intelligence API](https://cloud.google.com/video-intelligence/docs)):
 
-![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/architecture_1.png)
+![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/architecture_1.png)
 
 The processing pipeline follows these steps:
 
@@ -175,9 +175,9 @@ class VideoProcessor:
 
 ## 🔎 Results
 
-Here are the main objects found in the video [<JaneGoodall.mp4>](https://storage.googleapis.com/cloudmleap/video/next/JaneGoodall.mp4):
+Here are the main objects found in the video [<JaneGoodall.mp4>](https://storage.googleapis.com/cloud-samples-data/video/JaneGoodall.mp4):
 
-![Tracked object summary for JaneGoodall.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.summary_pct70_fr10.jpeg)
+![Tracked object summary for JaneGoodall.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.summary_pct70_fr10.jpeg)
 
 > Notes:
 > - The machine learning model has correctly identified different wildlife species: those are "true positives". It has also incorrectly identified our planet as "packaged goods": this is a "false positive". Machine learning models keep learning by being trained with new samples so, with time, their precision keeps increasing (resulting in less false positives).
@@ -191,7 +191,7 @@ Now, the icing on the cake (or the "cherry on the pie" as we say in French), you
 
 ### Architecture (v2)
 
-![Architecture (v2)](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/architecture_2.png)
+![Architecture (v2)](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/architecture_2.png)
 
 - A - Video object tracking can also be triggered manually with an HTTP GET request
 - B - The same rendering code is deployed in 2 sibling functions, differentiated with an environment variable
@@ -218,37 +218,37 @@ def gcf_track_objects_http(request):
 Here are some auto-generated trackings for the video [<animals.mp4>](https://storage.googleapis.com/cloudmleap/video/next/animals.mp4):
 
 - The left elephant (a big object ;) is detected:
-  ![Elephant on the left](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/animals.mp4.022_elephant_pct91_fr17.gif)
+  ![Elephant on the left](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.022_elephant_pct91_fr17.gif)
 - The right elephant is perfectly isolated too:
-  ![Elephant on the right](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/animals.mp4.021_elephant_pct93_fr17.gif)
+  ![Elephant on the right](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.021_elephant_pct93_fr17.gif)
 - The veterinarian is correctly identified:
-  ![Person on the left](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/animals.mp4.033_person_pct96_fr11.gif)
+  ![Person on the left](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.033_person_pct96_fr11.gif)
 - The animal he's feeding too:
-  ![Animal on the right](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/animals.mp4.034_animal_pct79_fr11.gif)
+  ![Animal on the right](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.034_animal_pct79_fr11.gif)
 
 Moving objects or static objects in moving shots are tracked too, as in [<beyond-the-map-rio.mp4>](https://storage.googleapis.com/ga-demo-videos/beyond-the-map-rio.mp4):
 
 - A building in a moving shot:
-  ![Shot with buildings 1](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/beyond-the-map-rio.mp4.000_building_pct77_fr10.gif)
+  ![Shot with buildings 1](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/beyond-the-map-rio.mp4.000_building_pct77_fr10.gif)
 - Neighbor buildings are tracked too:
-  ![Shot with buildings 2](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/beyond-the-map-rio.mp4.001_building_pct83_fr11.gif)
+  ![Shot with buildings 2](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/beyond-the-map-rio.mp4.001_building_pct83_fr11.gif)
 - Persons in a moving shot:
-  ![Moving persons](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/beyond-the-map-rio.mp4.004_person_pct100_fr11.gif)
+  ![Moving persons](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/beyond-the-map-rio.mp4.004_person_pct100_fr11.gif)
 - A surfer crossing the shot:
-  ![Surfer](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/beyond-the-map-rio.mp4.010_person_pct97_fr14.gif)
+  ![Surfer](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/beyond-the-map-rio.mp4.010_person_pct97_fr14.gif)
 
-Here are some others for the video [<JaneGoodall.mp4>](https://storage.googleapis.com/cloudmleap/video/next/JaneGoodall.mp4):
+Here are some others for the video [<JaneGoodall.mp4>](https://storage.googleapis.com/cloud-samples-data/video/JaneGoodall.mp4):
 
 - A butterfly (easy?):
-  ![Butterfly](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.005_butterfly_pct91_fr21.gif)
+  ![Butterfly](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.005_butterfly_pct91_fr21.gif)
 - An insect, in larval stage, climbing a moving twig:
-  ![Caterpillar on moving twig](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.004_insect_pct71_fr23.gif)
+  ![Caterpillar on moving twig](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.004_insect_pct71_fr23.gif)
 - An ape in a tree far away (hard?):
-  ![Ape catching bugs in tree far away](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.002_animal_pct81_fr24.gif)
+  ![Ape catching bugs in tree far away](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.002_animal_pct81_fr24.gif)
 - A monkey jumping from the top of a tree (harder?):
-  ![Monkey jumping from tree top](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.008_animal_pct75_fr12.gif)
+  ![Monkey jumping from tree top](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.008_animal_pct75_fr12.gif)
 - Now, a trap! If we can be fooled, current machine learning state of the art can too:
-  ![A flower or maybe not a flower](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/JaneGoodall.mp4.007_flower_pct85_fr16.gif)
+  ![A flower or maybe not a flower](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/JaneGoodall.mp4.007_flower_pct85_fr16.gif)
 
 ## 🚀 Source code and deployment
 

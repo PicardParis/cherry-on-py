@@ -66,7 +66,7 @@ gsutil mb -b on -c regional -l $GCS_REGION gs://$OBJECT_BUCKET
 
 Here is what you get in the [Cloud Console](https://console.cloud.google.com/storage/browser):
 
-![Cloud Storage buckets](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/buckets.png)
+![Cloud Storage buckets](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/buckets.png)
 
 ### Cloud APIs
 
@@ -184,7 +184,7 @@ gcloud functions deploy $GCF_NAME \
 
 Here is what you get in the [Cloud Console](https://console.cloud.google.com/functions/list):
 
-![Cloud Functions](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/functions.png)
+![Cloud Functions](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/functions.png)
 
 > Notes:
 > - The object rendering functions use the maximum possible timeout of 540 seconds and thus must complete in 9 minutes.
@@ -196,7 +196,7 @@ To trigger the pipeline, upload videos to the 1st bucket or send a GET request t
 
 ```bash
 GCF_NAME="gcf1_track_objects_http"
-VIDEO_URI="gs://cloudmleap/video/next/JaneGoodall.mp4"
+VIDEO_URI="gs://cloud-samples-data/video/JaneGoodall.mp4"
 GCF_URL="https://$GCF_REGION-$PROJECT_ID.cloudfunctions.net/$GCF_NAME?video_uri=$VIDEO_URI"
 
 curl $GCF_URL -H "Authorization: bearer $(gcloud auth print-identity-token)"
@@ -205,7 +205,7 @@ curl $GCF_URL -H "Authorization: bearer $(gcloud auth print-identity-token)"
 You'll see the HTTP response:
 
 ```text
-Launching object tracking for <gs://cloudmleap/video/next/JaneGoodall.mp4>...
+Launching object tracking for <gs://cloud-samples-data/video/JaneGoodall.mp4>...
 ```
 
 Check the logs:
@@ -243,7 +243,7 @@ D      gcf2_render_objects_animated  Function execution took 81792 ms, finished 
 
 And you can preview the results directly from the [Storage Browser](https://console.cloud.google.com/storage/browser/):
 
-![Production test](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gcf_object_tracking/pics/production-test.png)
+![Production test](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/production-test.png)
 
 ## 🧹 Project deletion
 

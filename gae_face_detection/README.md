@@ -13,7 +13,7 @@ In this article, you'll see the following:
 
 Here is a famous face that has been automatically anonymized and cropped. Do you guess who this is?
 
-![auto-anonymized.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/auto-anonymized.png)
+![auto-anonymized.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/auto-anonymized.png)
 
 > Note: We're talking about face detection, not face recognition. Though technically possible, face recognition can have harmful applications. Responsible companies have established AI principles and avoid exposing such potentially harmful technologies (e.g. [Google AI Principles](https://ai.google/principles)).
 
@@ -30,7 +30,7 @@ A few tools will do:
 
 Here is an architecture using 2 Google Cloud services ([App Engine](https://cloud.google.com/appengine/docs) + [Vision API](https://cloud.google.com/vision/docs)):
 
-![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/architecture.png)
+![Architecture](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/architecture.png)
 
 The workflow is the following:
 
@@ -175,7 +175,7 @@ def draw_face_landmarks(image: PilImage, annotations: Annotations):
             draw.rectangle(r, outline=ANNOTATION_COLOR, width=border)
 ```
 
-![american_gothic_1.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/american_gothic_1.png)
+![american_gothic_1.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/american_gothic_1.png)
 
 ### Face anonymization
 
@@ -198,7 +198,7 @@ def anonymize_faces(image: PilImage, annotations: Annotations):
         image.paste(face, (v[0].x, v[0].y))
 ```
 
-![american_gothic_2.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/american_gothic_2.png)
+![american_gothic_2.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/american_gothic_2.png)
 
 ### Face cropping
 
@@ -224,7 +224,7 @@ def face_crop_box(face_annotation):
     return int(hx - m + 0.5), int(hy - m + 0.5), int(hx + m + 1.5), int(hy + m + 1.5)
 ```
 
-![american_gothic_3.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/american_gothic_3.png)
+![american_gothic_3.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/american_gothic_3.png)
 
 ## 🍒 Cherry on Py 🐍
 
@@ -240,45 +240,45 @@ Here is what's detected on famous photorealistic paintings:
 
 - American Gothic
 
-  ![cropped_1_american_gothic.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/cropped_1_american_gothic.png)
+  ![cropped_1_american_gothic.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/cropped_1_american_gothic.png)
 
 - Girl with a Pearl Earring
 
-  ![cropped_2_girl_with_a_pearl_earring.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/cropped_2_girl_with_a_pearl_earring.png)
+  ![cropped_2_girl_with_a_pearl_earring.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/cropped_2_girl_with_a_pearl_earring.png)
 
 - Shakespeare
 
-  ![cropped_3_shakespeare.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/cropped_3_shakespeare.png)
+  ![cropped_3_shakespeare.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/cropped_3_shakespeare.png)
 
 Here are some animated versions:
 
 - American Gothic
 
-  ![animated_1_american_gothic.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/animated_1_american_gothic.png)
+  ![animated_1_american_gothic.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/animated_1_american_gothic.png)
 
 - Girl with a Pearl Earring
 
-  ![animated_2_girl_with_a_pearl_earring.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/animated_2_girl_with_a_pearl_earring.png)
+  ![animated_2_girl_with_a_pearl_earring.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/animated_2_girl_with_a_pearl_earring.png)
 
 - Shakespeare
 
-  ![animated_3_shakespeare.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/animated_3_shakespeare.png)
+  ![animated_3_shakespeare.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/animated_3_shakespeare.png)
 
 And, of course, this works even better on real pictures:
 
 - Personal pictures (aged from 2 to 44)
 
-  ![personal_42years_1_boxes.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/personal_42years_1_boxes.png)
+  ![personal_42years_1_boxes.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/personal_42years_1_boxes.png)
 
 - Yes, I've had a moustache for over 42 years, and my sister too ;)
 
-  ![personal_42years_2_animated.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/personal_42years_2_animated.png)
+  ![personal_42years_2_animated.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/personal_42years_2_animated.png)
 
 And, finally, here is our famous anonymous from the beginning:
 
 - Mona Lisa
 
-  ![auto-animated.png](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/auto-animated.png)
+  ![auto-animated.png](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/auto-animated.png)
 
 ## 🚀 Source code and deployment
 
@@ -294,7 +294,7 @@ And, finally, here is our famous anonymous from the beginning:
 
 - Here is a preview:
 
-  [![demo.gif](https://github.com/PicardParis/cherry-on-py-pics/raw/live/gae_face_detection/pics/demo.gif)](https://face-detection.lolo.dev)
+  [![demo.gif](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gae_face_detection/pics/demo.gif)](https://face-detection.lolo.dev)
 
 ## 🖖 See you
 
