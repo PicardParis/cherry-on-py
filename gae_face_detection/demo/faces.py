@@ -1,5 +1,5 @@
 """
-Copyright 2020 Google LLC
+Copyright 2020-2021 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@ limitations under the License.
 """
 from io import BytesIO
 from math import atan2, ceil, cos, fabs, sin, sqrt
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
 
-from google.cloud import vision
+from google.cloud import vision_v1 as vision
 from PIL import Image, ImageDraw, ImageOps
 
 PilImage = Image.Image
 Point = NamedTuple("Point", [("x", int), ("y", int)])
-Annotations = vision.types.AnnotateImageResponse
-LandmarkType = vision.enums.FaceAnnotation.Landmark.Type
+Annotations = vision.AnnotateImageResponse
+LandmarkType = vision.FaceAnnotation.Landmark.Type
 
 # Reference moustache by Mushon Zer-Aviv, Yanka (see CREDITS.md)
 REF_STACHE = "www/res/stache.png"
@@ -42,7 +42,7 @@ EYE_R = LandmarkType.RIGHT_EYE
 ANNOTATION_COLOR = "#00FF00"
 ANNOTATION_LANDMARK_DIM_PERMIL = 8
 ANNOTATION_LANDMARK_DIM_MIN = 4
-ANONYMIZATION_PIXELS=13
+ANONYMIZATION_PIXELS = 13
 ANIM_ANGLES = (0.0, -0.2, +0.2, -0.1, +0.1, -0.05, +0.05)
 ANIM_SCALES = (1.0, 1.2, 0.8, 1.1, 0.9, 1.05, 0.95)
 assert len(ANIM_SCALES) == len(ANIM_ANGLES)
@@ -54,7 +54,7 @@ CROP_MARGIN_PERCENT = 10
 
 def detect_faces(image_bytes: bytes) -> Annotations:
     client = vision.ImageAnnotatorClient()
-    api_image = vision.types.Image(content=image_bytes)
+    api_image = vision.Image(content=image_bytes)
     return client.face_detection(api_image, max_results=MAX_DETECTED_FACES)
 
 
@@ -118,7 +118,7 @@ def draw_stache_on_face(
     image.paste(stache, (x, y), stache)
 
 
-def get_face_geometry(landmarks) -> Tuple[float, float, Point]:
+def get_face_geometry(landmarks) -> tuple[float, float, Point]:
     """Returns the following 3 values:
     - The distance between the eyes (pix)
     - The mouth angle of elevation (rad)
@@ -127,7 +127,7 @@ def get_face_geometry(landmarks) -> Tuple[float, float, Point]:
     landmark_types = [EYE_L, EYE_R, MOUTH_L, MOUTH_R, NOSE_B]
     points = {}
     for landmark in landmarks:
-        landmark_type = landmark.type
+        landmark_type = landmark.type_
         if landmark_type in landmark_types:
             position = landmark.position
             points[landmark_type] = Point(position.x, position.y)
@@ -144,7 +144,7 @@ def get_face_geometry(landmarks) -> Tuple[float, float, Point]:
 def transform_image(
     image: PilImage, angle: float, zoom: float, center: Point
 ) -> PilImage:
-    """ Returns a copy of image rotated/scaled around center """
+    """Returns a copy of image rotated/scaled around center."""
     cos_a, sin_a = cos(angle), sin(angle)
     source_w, source_h = image.size
     scaled_w, scaled_h = source_w * zoom, source_h * zoom
@@ -186,7 +186,7 @@ def crop_image(image: PilImage, annotations: Annotations) -> PilImage:
     return image.crop((min_x, min_y, max_x, max_y))
 
 
-def face_crop_box(face_annotation):
+def face_crop_box(face_annotation) -> tuple[int, int, int, int]:
     v = face_annotation.bounding_poly.vertices
     x1, y1, x2, y2 = v[0].x, v[0].y, v[2].x + 1, v[2].y + 1
     w, h = x2 - x1, y2 - y1
@@ -195,8 +195,10 @@ def face_crop_box(face_annotation):
     return int(hx - m + 0.5), int(hy - m + 0.5), int(hx + m + 1.5), int(hy + m + 1.5)
 
 
-def render_result(input: PilImage, annotations: Annotations, options: ResultOptions):
-    """ Renders the still|animated image, returns its bytes and format """
+def render_result(
+    input: PilImage, annotations: Annotations, options: ResultOptions
+) -> BytesIO:
+    """Renders the still|animated image, returns its bytes and format."""
 
     def draw_frame(image: PilImage, angle=0.0, scale=1.0) -> PilImage:
         if not annotations.face_annotations:

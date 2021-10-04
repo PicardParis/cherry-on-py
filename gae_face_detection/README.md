@@ -70,11 +70,11 @@ This is one of many possible architectures. The advantages of this one are the f
 Define the dependencies in the `requirements.txt` file:
 
 ```bash
-google-cloud-vision==1.0.0
+google-cloud-vision==2.4.4
 
-Pillow==7.2.0
+Pillow==8.3.2
 
-Flask==1.1.2
+Flask==2.0.2
 ```
 
 > Notes:
@@ -89,14 +89,14 @@ Flask==1.1.2
 The Vision API gives access to state-of-the-art machine learning models for image analysis. One of the multiple features is face detection. Here is a way to detect faces in an image:
 
 ```python
-from google.cloud import vision
+from google.cloud import vision_v1 as vision
 
-Annotations = vision.types.AnnotateImageResponse
+Annotations = vision.AnnotateImageResponse
 MAX_DETECTED_FACES = 50
 
 def detect_faces(image_bytes: bytes) -> Annotations:
     client = vision.ImageAnnotatorClient()
-    api_image = vision.types.Image(content=image_bytes)
+    api_image = vision.Image(content=image_bytes)
     return client.face_detection(api_image, max_results=MAX_DETECTED_FACES)
 ```
 
@@ -111,7 +111,7 @@ import flask
 
 app = flask.Flask(__name__)
 
-@app.route("/analyze-image", methods=["POST"])
+@app.post("/analyze-image")
 def analyze_image():
     image_file = flask.request.files.get("image")
     annotations = detect_faces(image_file.read())
@@ -122,7 +122,7 @@ def analyze_image():
     )
 
 def encode_annotations(annotations: Annotations) -> str:
-    binary_data = annotations.SerializeToString()
+    binary_data = Annotations.serialize(annotations)
     base64_data = base64.urlsafe_b64encode(binary_data)
     base64_annotations = base64_data.decode("ascii")
     return base64_annotations
@@ -215,7 +215,7 @@ def crop_faces(image: PilImage, annotations: Annotations) -> PilImage:
     image.putalpha(mask)
     return image
 
-def face_crop_box(face_annotation):
+def face_crop_box(face_annotation) -> tuple[int, int, int, int]:
     v = face_annotation.bounding_poly.vertices
     x1, y1, x2, y2 = v[0].x, v[0].y, v[2].x + 1, v[2].y + 1
     w, h = x2 - x1, y2 - y1
