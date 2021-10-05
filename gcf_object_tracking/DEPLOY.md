@@ -99,7 +99,7 @@ GCF_ENV_VARS="ANNOTATION_BUCKET=$ANNOTATION_BUCKET"
 GCF_MEMORY="128MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS \
@@ -120,7 +120,7 @@ GCF_ENV_VARS="ANNOTATION_BUCKET=$ANNOTATION_BUCKET"
 GCF_MEMORY="128MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS \
@@ -145,7 +145,7 @@ GCF_TIMEOUT="540s"
 GCF_MEMORY="512MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS1 \
@@ -170,7 +170,7 @@ GCF_TIMEOUT="540s"
 GCF_MEMORY="1024MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS1 \

@@ -9,7 +9,7 @@ In this article, following up on the previous one ("Video summary as a service")
 - with an automated processing pipeline,
 - in less than 300 lines of Python code.
 
-Here is an example of an auto-generated object summary for the video [<animals.mp4>](https://storage.googleapis.com/cloudmleap/video/next/animals.mp4):
+Here is an example of an auto-generated object summary for the video [<animals.mp4>](https://storage.googleapis.com/cloud-samples-data/video/animals.mp4):
 
 ![Tracked object summary for animals.mp4](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.summary_pct70_fr10.jpeg)
 
@@ -76,17 +76,16 @@ def launch_object_tracking(video_uri: str, annot_bucket: str):
     - video_uri: gs://video_bucket/path/to/video.ext
     - annot_uri: gs://annot_bucket/video_bucket/path/to/video.ext.json
     """
-    print(f'Launching object tracking for <{video_uri}>...')
-    features = [videointelligence.enums.Feature.OBJECT_TRACKING]
+    print(f"Launching object tracking for <{video_uri}>...")
+    features = [videointelligence.Feature.OBJECT_TRACKING]
     video_blob = storage.Blob.from_string(video_uri)
     video_bucket = video_blob.bucket.name
     path_to_video = video_blob.name
-    annot_uri = f'gs://{annot_bucket}/{video_bucket}/{path_to_video}.json'
+    annot_uri = f"gs://{annot_bucket}/{video_bucket}/{path_to_video}.json"
+    request = dict(features=features, input_uri=video_uri, output_uri=annot_uri)
 
     video_client = videointelligence.VideoIntelligenceServiceClient()
-    video_client.annotate_video(features=features,
-                                input_uri=video_uri,
-                                output_uri=annot_uri)
+    video_client.annotate_video(request)
 ```
 
 ### Cloud Function entry point
@@ -94,14 +93,14 @@ def launch_object_tracking(video_uri: str, annot_bucket: str):
 ```python
 import os
 
-ANNOTATION_BUCKET = os.getenv('ANNOTATION_BUCKET', '')
-assert ANNOTATION_BUCKET, 'Undefined ANNOTATION_BUCKET environment variable'
+ANNOTATION_BUCKET = os.getenv("ANNOTATION_BUCKET", "")
+assert ANNOTATION_BUCKET, "Undefined ANNOTATION_BUCKET environment variable"
 
 def gcf_track_objects(data, context):
-    """ Cloud Function triggered by a new Cloud Storage object """
-    video_bucket = data['bucket']
-    path_to_video = data['name']
-    video_uri = f'gs://{video_bucket}/{path_to_video}'
+    """Cloud Function triggered by a new Cloud Storage object"""
+    video_bucket = data["bucket"]
+    path_to_video = data["name"]
+    video_uri = f"gs://{video_bucket}/{path_to_video}"
     launch_object_tracking(video_uri, ANNOTATION_BUCKET)
 ```
 
@@ -125,10 +124,10 @@ Here is a possible core function for the 2nd Cloud Function:
 class VideoProcessor:
     @staticmethod
     def render_objects(annot_uri: str, output_bucket: str):
-        """ Render objects from video annotations """
+        """Render objects from video annotations"""
         with StorageHelper(annot_uri, output_bucket) as storage:
             with VideoProcessor(storage) as video_proc:
-                print(f'Objects to render: {video_proc.object_count}')
+                print(f"Objects to render: {video_proc.object_count}")
                 video_proc.render_object_summary()
 ```
 
@@ -136,10 +135,10 @@ class VideoProcessor:
 
 ```python
 def gcf_render_objects(data, context):
-    """ Cloud Function triggered by a new Cloud Storage object """
-    annotation_bucket = data['bucket']
-    path_to_annotation = data['name']
-    annot_uri = f'gs://{annotation_bucket}/{path_to_annotation}'
+    """Cloud Function triggered by a new Cloud Storage object"""
+    annotation_bucket = data["bucket"]
+    path_to_annotation = data["name"]
+    annot_uri = f"gs://{annotation_bucket}/{path_to_annotation}"
     VideoProcessor.render_objects(annot_uri, OBJECT_BUCKET)
 ```
 
@@ -151,13 +150,15 @@ def gcf_render_objects(data, context):
 
 ```python
 class VideoProcessor:
-    def get_frame_with_overlay(self, obj, frame) -> PilImage:
+    def get_frame_with_overlay(
+        self, obj: vi.ObjectTrackingAnnotation, frame: vi.ObjectTrackingFrame
+    ) -> PilImage:
         def get_video_frame() -> PilImage:
-            pos_ms = frame.time_offset.ToMilliseconds()
+            pos_ms = frame.time_offset.total_seconds() * 1000
             self.video.set(cv.CAP_PROP_POS_MSEC, pos_ms)
             _, cv_frame = self.video.read()
             image = Image.fromarray(cv.cvtColor(cv_frame, cv.COLOR_BGR2RGB))
-            image.thumbnail(self.cell_size)  # Make it smaller if needed
+            image.thumbnail(self.cell_size)  # Makes it smaller if needed
             return image
 
         def add_caption(image: PilImage) -> PilImage:
@@ -201,21 +202,21 @@ Now, the icing on the cake (or the "cherry on the pie" as we say in French), you
 
 ```python
 def gcf_track_objects_http(request):
-    """ Cloud Function triggered by an HTTP GET request """
-    if request.method != 'GET':
-        return ('Please use a GET request', 403)
-    if not request.args or 'video_uri' not in request.args:
+    """Cloud Function triggered by an HTTP GET request"""
+    if request.method != "GET":
+        return ("Please use a GET request", 403)
+    if not request.args or "video_uri" not in request.args:
         return ('Please specify a "video_uri" parameter', 400)
-    video_uri = request.args['video_uri']
+    video_uri = request.args["video_uri"]
     launch_object_tracking(video_uri, ANNOTATION_BUCKET)
-    return f'Launched object tracking for <{video_uri}>'
+    return f"Launched object tracking for <{video_uri}>"
 ```
 
 > Note: This is the same code as `gcf_track_objects()` with the video URI parameter specified by the caller through a GET request.
 
 ## 🎉 Results
 
-Here are some auto-generated trackings for the video [<animals.mp4>](https://storage.googleapis.com/cloudmleap/video/next/animals.mp4):
+Here are some auto-generated trackings for the video [<animals.mp4>](https://storage.googleapis.com/cloud-samples-data/video/animals.mp4):
 
 - The left elephant (a big object ;) is detected:
   ![Elephant on the left](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_object_tracking/pics/animals.mp4.022_elephant_pct91_fr17.gif)
