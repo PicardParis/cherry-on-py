@@ -1,5 +1,5 @@
 """
-Copyright 2020 Google LLC
+Copyright 2020-2021 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,25 +17,26 @@ import os
 
 from video_processor import VideoProcessor
 
-SUMMARY_BUCKET = os.getenv('SUMMARY_BUCKET', '')
-assert SUMMARY_BUCKET, 'Undefined SUMMARY_BUCKET environment variable'
-ANIMATED = os.getenv('ANIMATED', '0') == '1'
+SUMMARY_BUCKET = os.getenv("SUMMARY_BUCKET", "")
+assert SUMMARY_BUCKET, "Undefined SUMMARY_BUCKET environment variable"
+ANIMATED = os.getenv("ANIMATED", "0") == "1"
 
 
 def gcf_generate_summary(data, context):
-    """ Cloud Function triggered by a new Cloud Storage object """
-    annotation_bucket = data['bucket']
-    path_to_annotation = data['name']
-    annot_uri = f'gs://{annotation_bucket}/{path_to_annotation}'
+    """Cloud Function triggered by a new Cloud Storage object"""
+    annotation_bucket = data["bucket"]
+    path_to_annotation = data["name"]
+    annot_uri = f"gs://{annotation_bucket}/{path_to_annotation}"
     VideoProcessor.generate_summary(annot_uri, SUMMARY_BUCKET, ANIMATED)
 
 
-if __name__ == '__main__':
-    """ Only for local tests """
+if __name__ == "__main__":
+    # Local tests only (service account needed)
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('annot_uri',
-                        type=str,
-                        help='gs://annotation_bucket/path/to/video.ext.json')
+    parser.add_argument(
+        "annot_uri", type=str, help="gs://annotation_bucket/path/to/video.ext.json"
+    )
     args = parser.parse_args()
     VideoProcessor.generate_summary(args.annot_uri, SUMMARY_BUCKET, ANIMATED)

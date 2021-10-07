@@ -9,10 +9,10 @@ Dear developers,
 - Do you like the adage _"a picture is worth a thousand words"_? I do!
 - Let's check if it also works for _"a picture is worth a thousand frames"_.
 - In this tutorial, you'll see the following:
-  - how to understand the content of a video in a blink,
-  - in less than 300 lines of Python (3.7) code.
+  - How to understand the content of a video in a blink,
+  - in less than 300 lines of Python (3.9) code.
 
-Here is a visual summary example, generated from a 2'42" video made of 35 sequences (shots):
+Here is a visual summary example, generated from a 2'42" video made of 35 sequences (also known as video shots):
 
 ![Video summary example](https://github.com/PicardParis/cherry-on-py-pics/raw/main/gcf_video_summary/pics/JaneGoodall.mp4.summary035_still.jpeg)
 
@@ -266,23 +266,22 @@ The Video Intelligence API is a pre-trained machine learning model that can anal
 from google.cloud import storage, videointelligence
 
 def launch_shot_detection(video_uri: str, annot_bucket: str):
-    """ Detect video shots (asynchronous operation)
+    """Detect video shots (asynchronous operation)
 
     Results will be stored in <annot_uri> with this naming convention:
     - video_uri: gs://video_bucket/path/to/video.ext
     - annot_uri: gs://annot_bucket/video_bucket/path/to/video.ext.json
     """
-    print(f'Launching shot detection for <{video_uri}>...')
+    print(f"Launching shot detection for <{video_uri}>...")
+    features = [videointelligence.Feature.SHOT_CHANGE_DETECTION]
     video_blob = storage.Blob.from_string(video_uri)
     video_bucket = video_blob.bucket.name
     path_to_video = video_blob.name
-    annot_uri = f'gs://{annot_bucket}/{video_bucket}/{path_to_video}.json'
+    annot_uri = f"gs://{annot_bucket}/{video_bucket}/{path_to_video}.json"
+    request = dict(features=features, input_uri=video_uri, output_uri=annot_uri)
 
     video_client = videointelligence.VideoIntelligenceServiceClient()
-    features = [videointelligence.enums.Feature.SHOT_CHANGE_DETECTION]
-    video_client.annotate_video(input_uri=video_uri,
-                                features=features,
-                                output_uri=annot_uri)
+    video_client.annotate_video(request)
 ```
 
 ### Local development and tests
@@ -311,8 +310,8 @@ pip list
 Package                        Version
 ------------------------------ ----------
 ...
-google-cloud-storage           1.28.1
-google-cloud-videointelligence 1.14.0
+google-cloud-storage           1.42.3
+google-cloud-videointelligence 2.3.3
 ...
 ```
 
@@ -321,21 +320,22 @@ You can use the main scope to test the function in script mode:
 ```python
 import os
 
-ANNOTATION_BUCKET = os.getenv('ANNOTATION_BUCKET', '')
-assert ANNOTATION_BUCKET, 'Undefined ANNOTATION_BUCKET environment variable'
+ANNOTATION_BUCKET = os.getenv("ANNOTATION_BUCKET", "")
+assert ANNOTATION_BUCKET, "Undefined ANNOTATION_BUCKET environment variable"
 
-if __name__ == '__main__':
-    """ Only for local tests """
+if __name__ == "__main__":
+    # Local tests only (service account needed)
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('video_uri',
-                        type=str,
-                        help='gs://video_bucket/path/to/video.ext')
+    parser.add_argument(
+        "video_uri", type=str, help="gs://video_bucket/path/to/video.ext"
+    )
     args = parser.parse_args()
     launch_shot_detection(args.video_uri, ANNOTATION_BUCKET)
 ```
 
-> Note: You have already exported the `ANNOTATION_BUCKET` environment variable earlier in the shell session; you will also define it later at deployment stage. This makes the code generic and lets you reuse it independently of the output bucket.
+> Note: You have already exported the `ANNOTATION_BUCKET` environment variable earlier in the shell session; you will also use it later at deployment stage. This makes the code generic and lets you reuse it independently of the output bucket.
 
 Test the function:
 
@@ -400,10 +400,10 @@ rm -rf venv
 
 ```python
 def gcf_detect_shots(data, context):
-    """ Cloud Function triggered by a new Cloud Storage object """
-    video_bucket = data['bucket']
-    path_to_video = data['name']
-    video_uri = f'gs://{video_bucket}/{path_to_video}'
+    """Cloud Function triggered by a new Cloud Storage object"""
+    video_bucket = data["bucket"]
+    path_to_video = data["name"]
+    video_uri = f"gs://{video_bucket}/{path_to_video}"
     launch_shot_detection(video_uri, ANNOTATION_BUCKET)
 ```
 
@@ -422,7 +422,7 @@ GCF_ENV_VARS="ANNOTATION_BUCKET=$ANNOTATION_BUCKET"
 GCF_MEMORY="128MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS \
@@ -461,7 +461,7 @@ Make sure to test the function in production. Copy a video into the video bucket
 
 ```bash
 VIDEO_NAME="gbikes_dinosaur.mp4"
-SRC_URI="gs://cloudmleap/video/next/$VIDEO_NAME"
+SRC_URI="gs://cloud-samples-data/video/$VIDEO_NAME"
 DST_URI="gs://$VIDEO_BUCKET/$VIDEO_NAME"
 
 gsutil cp $SRC_URI $DST_URI
@@ -520,13 +520,11 @@ class VideoProcessor:
         try:
             with StorageHelper(annot_uri, output_bucket) as storage:
                 with VideoProcessor(storage) as video_proc:
-                    print('Generating summary...')
+                    print("Generating summary...")
                     image = video_proc.render_summary()
                     video_proc.upload_summary_as_jpeg(image)
-        except:
-            logging.exception(
-                'Could not generate summary from shot annotations <%s>',
-                annot_uri)
+        except Exception:
+            logging.exception("Could not generate summary from <%s>", annot_uri)
 ```
 
 > Note: If exceptions are raised, it's handy to log them with `logging.exception()` to get a stack trace in production logs.
@@ -542,7 +540,7 @@ The class manages the following:
 
 ```python
 class StorageHelper:
-    """ Local+Cloud storage helper
+    """Local+Cloud storage helper
 
     - Uses a temp dir for local processing (e.g. video frame extraction)
     - Paths are relative to this temp dir (named after the output bucket)
@@ -554,24 +552,22 @@ class StorageHelper:
     - summary_path:                   video_bucket/path/to/video.ext.SUFFIX
     - summary_uri: gs://output_bucket/video_bucket/path/to/video.ext.SUFFIX
     """
+
     client = storage.Client()
-    upload_bucket: storage.Bucket
-    shots: 'VideoShots'
+    video_shots: list[VideoShot]
     video_path: Path
     video_local_path: Path
-
-    ANNOT_EXT = '.json'
-    VideoShots = List[VideoShot]
+    upload_bucket: storage.Bucket
 
     def __init__(self, annot_uri: str, output_bucket: str):
-        if not annot_uri.endswith(self.ANNOT_EXT):
-            raise RuntimeError(f'annot_uri must end with <{self.ANNOT_EXT}>')
-        self.upload_bucket = self.client.bucket(output_bucket)
-        self.shots = self.load_annotations(annot_uri)
+        if not annot_uri.endswith(ANNOT_EXT):
+            raise RuntimeError(f"annot_uri must end with <{ANNOT_EXT}>")
+        self.video_shots = self.get_video_shots(annot_uri)
         self.video_path = self.video_path_from_uri(annot_uri)
         temp_root = Path(tempfile.gettempdir(), output_bucket)
         temp_root.mkdir(parents=True, exist_ok=True)
         self.video_local_path = temp_root.joinpath(self.video_path)
+        self.upload_bucket = self.client.bucket(output_bucket)
 ```
 
 The source video is handled in the `with` statement context manager:
@@ -587,13 +583,14 @@ The source video is handled in the `with` statement context manager:
 
 > Note: Once downloaded, the video uses memory space in the `/tmp` RAM disk (the only writable space for the serverless function). It's best to delete temporary files when they're not needed anymore, to avoid potential out-of-memory errors on future invocations of the function.
 
-Annotations are retrieved with the methods `storage.Blob.download_as_string()` and `json.loads()`:
+The video annotations can be retrieved with the methods `storage.Blob.download_as_text()` and `json.loads()`:
 
 ```python
-    def load_annotations(self, annot_uri: str) -> VideoShots:
+    def get_video_shots(self, annot_uri: str) -> list[VideoShot]:
         json_blob = storage.Blob.from_string(annot_uri, self.client)
-        api_response = json.loads(json_blob.download_as_string())
-        annotations: Dict = api_response['annotation_results'][0]['shot_annotations']
+        api_response: dict = json.loads(json_blob.download_as_text())
+        single_video_results: dict = api_response["annotation_results"][0]
+        annotations: list = single_video_results["shot_annotations"]
         return [VideoShot.from_dict(annotation) for annotation in annotations]
 ```
 
@@ -601,31 +598,22 @@ The parsing is handled with this `VideoShot` helper class:
 
 ```python
 class VideoShot(NamedTuple):
-    """ Video shot start/end positions in nanoseconds """
+    """Video shot start/end positions in nanoseconds"""
+
     pos1_ns: int
     pos2_ns: int
-    NANOS_PER_SECOND = 10**9
+    NANOS_PER_SECOND = 10 ** 9
 
     @classmethod
-    def from_dict(cls, annotation: Dict) -> 'VideoShot':
+    def from_dict(cls, annotation: dict) -> "VideoShot":
         def time_offset_in_ns(time_offset) -> int:
-            seconds: int = time_offset.get('seconds', 0)
-            nanos: int = time_offset.get('nanos', 0)
+            seconds: int = time_offset.get("seconds", 0)
+            nanos: int = time_offset.get("nanos", 0)
             return seconds * cls.NANOS_PER_SECOND + nanos
-        pos1_ns = time_offset_in_ns(annotation['start_time_offset'])
-        pos2_ns = time_offset_in_ns(annotation['end_time_offset'])
+
+        pos1_ns = time_offset_in_ns(annotation["start_time_offset"])
+        pos2_ns = time_offset_in_ns(annotation["end_time_offset"])
         return cls(pos1_ns, pos2_ns)
-```
-
-Video shot info can be exposed with a getter and a generator:
-
-```python
-    def shot_count(self) -> int:
-        return len(self.shots)
-
-    def gen_video_shots(self) -> Iterator[VideoShot]:
-        for video_shot in self.shots:
-            yield video_shot
 ```
 
 The naming convention was chosen to keep consistent object paths between the different buckets. This also lets you deduce the video path from the annotation URI:
@@ -633,16 +621,16 @@ The naming convention was chosen to keep consistent object paths between the dif
 ```python
     def video_path_from_uri(self, annot_uri: str) -> Path:
         annot_blob = storage.Blob.from_string(annot_uri)
-        return Path(annot_blob.name[:-len(self.ANNOT_EXT)])
+        return Path(annot_blob.name[: -len(ANNOT_EXT)])
 ```
 
 The video is directly downloaded with `storage.Blob.download_to_filename()`:
 
 ```python
     def download_video(self):
-        video_uri = f'gs://{self.video_path.as_posix()}'
+        video_uri = f"gs://{self.video_path.as_posix()}"
         blob = storage.Blob.from_string(video_uri, self.client)
-        print(f'Downloading -> {self.video_local_path}')
+        print(f"Downloading -> {self.video_local_path}")
         self.video_local_path.parent.mkdir(parents=True, exist_ok=True)
         blob.download_to_filename(self.video_local_path)
 ```
@@ -653,21 +641,21 @@ On the opposite, results can be uploaded with `storage.Blob.upload_from_string()
     def upload_summary(self, image_bytes: bytes, image_type: str):
         path = self.summary_path(image_type)
         blob = self.upload_bucket.blob(path.as_posix())
-        content_type = f'image/{image_type}'
-        print(f'Uploading -> {blob.name}')
+        content_type = f"image/{image_type}"
+        print(f"Uploading -> {blob.name}")
         blob.upload_from_string(image_bytes, content_type)
 ```
 
-> Note: `from_string` means `from_bytes` here (Python 2 legacy). `Pillow` supports working with memory images, which avoids having to manage local files.
+> Note: `Pillow` supports working with memory images, which avoids having to manage local files.
 
 And finally, here is a possible naming convention for the summary files:
 
 ```python
     def summary_path(self, image_type: str) -> Path:
         video_name = self.video_path.name
-        shot_count = self.shot_count()
-        suffix = f'summary{shot_count:03d}.{image_type}'
-        summary_name = f'{video_name}.{suffix}'
+        shot_count = len(self.video_shots)
+        suffix = f"summary{shot_count:03d}.{image_type}"
+        summary_name = f"{video_name}.{suffix}"
         return Path(self.video_path.parent, summary_name)
 ```
 
@@ -684,11 +672,11 @@ from PIL import Image
 
 from storage_helper import StorageHelper
 
-class VideoProcessor:
-    class ImageSize(NamedTuple):
-        w: int
-        h: int
+PilImage = Image.Image
+ImageSize = NamedTuple("ImageSize", [("w", int), ("h", int)])
 
+
+class VideoProcessor:
     storage: StorageHelper
     video: cv.VideoCapture
     cell_size: ImageSize
@@ -705,7 +693,7 @@ Opening and closing the video is handled in the `with` statement context manager
         video_path = self.storage.video_local_path
         self.video = cv.VideoCapture(str(video_path))
         if not self.video.isOpened():
-            raise RuntimeError(f'Could not open video <{video_path}>')
+            raise RuntimeError(f"Could not open video <{video_path}>")
         self.compute_grid_dimensions()
         return self
 
@@ -716,13 +704,12 @@ Opening and closing the video is handled in the `with` statement context manager
 The video summary is a grid of cells which can be rendered in a single loop with two generators:
 
 ```python
-    def render_summary(self, shot_ratio: float = 0.5) -> Image:
-        grid_img = Image.new('RGB', self.grid_size, self.RGB_BACKGROUND)
+    def render_summary(self, shot_ratio: float = 0.5) -> PilImage:
+        grid_img = Image.new("RGB", self.grid_size, RGB_BACKGROUND)
 
-        img_and_pos_iter = zip(self.gen_cell_img(shot_ratio),
-                               self.gen_cell_pos())
+        img_and_pos_iter = zip(self.gen_cell_img(shot_ratio), self.gen_cell_pos())
         for cell_img, cell_pos in img_and_pos_iter:
-            cell_img.thumbnail(self.cell_size)  # Make it smaller if needed
+            cell_img.thumbnail(self.cell_size)  # Makes it smaller if needed
             grid_img.paste(cell_img, cell_pos)
 
         return grid_img
@@ -733,35 +720,33 @@ The video summary is a grid of cells which can be rendered in a single loop with
 The first generator yields cell images:
 
 ```python
-    def gen_cell_img(self, shot_ratio: float) -> Iterator['Image']:
+    def gen_cell_img(self, shot_ratio: float) -> Iterator[PilImage]:
         assert 0.0 <= shot_ratio <= 1.0
-        MS_IN_NS = 10**6
-        for video_shot in self.storage.gen_video_shots():
+        MS_IN_NS = 10 ** 6
+        for video_shot in self.storage.video_shots:
             pos1_ns, pos2_ns = video_shot
-            pos_ms = (pos1_ns + shot_ratio*(pos2_ns-pos1_ns)) / MS_IN_NS
-            yield self.image_at_pos(pos_ms)
+            pos_ms = (pos1_ns + shot_ratio * (pos2_ns - pos1_ns)) / MS_IN_NS
+            yield self.frame_at_position(pos_ms)
 ```
 
 The second generator yields cell positions:
 
 ```python
-    def gen_cell_pos(self) -> Iterator[Tuple[int, int]]:
+    def gen_cell_pos(self) -> Iterator[tuple[int, int]]:
         cell_x, cell_y = 0, 0
         while True:
             yield cell_x, cell_y
             cell_x += self.cell_size.w
             if self.grid_size.w <= cell_x:  # Move to next row?
-                cell_x, cell_y = 0, cell_y+self.cell_size.h
+                cell_x, cell_y = 0, cell_y + self.cell_size.h
 ```
 
 `OpenCV` easily allows extracting video frames at a given position:
 
 ```python
-    def image_at_pos(self, pos_ms: float) -> Image:
+    def frame_at_position(self, pos_ms: float) -> PilImage:
         self.video.set(cv.CAP_PROP_POS_MSEC, pos_ms)
-        ok, cv_frame = self.video.read()
-        if not ok:
-            raise RuntimeError(f'Failed to get video frame @pos_ms[{pos_ms}]')
+        _, cv_frame = self.video.read()
         return Image.fromarray(cv.cvtColor(cv_frame, cv.COLOR_BGR2RGB))
 ```
 
@@ -769,9 +754,9 @@ Choosing the summary grid composition is arbitrary. Here is an example to compos
 
 ```python
     def compute_grid_dimensions(self):
-        shot_count = self.storage.shot_count()
+        shot_count = len(self.storage.video_shots)
         if shot_count < 1:
-            raise RuntimeError(f'Expected 1+ video shots (got {shot_count})')
+            raise RuntimeError(f"Expected 1+ video shots (got {shot_count})")
         # Try to preserve the video aspect ratio
         # Consider cells as pixels and try to fit them in a square
         cols = rows = int(shot_count ** 0.5 + 0.5)
@@ -779,20 +764,20 @@ Choosing the summary grid composition is arbitrary. Here is an example to compos
             cols += 1
         cell_w = int(self.video.get(cv.CAP_PROP_FRAME_WIDTH))
         cell_h = int(self.video.get(cv.CAP_PROP_FRAME_HEIGHT))
-        if self.SUMMARY_MAX_SIZE.w < cell_w*cols:
-            scale = self.SUMMARY_MAX_SIZE.w / (cell_w*cols)
+        if SUMMARY_MAX_SIZE.w < cell_w * cols:
+            scale = SUMMARY_MAX_SIZE.w / (cell_w * cols)
             cell_w = int(scale * cell_w)
             cell_h = int(scale * cell_h)
-        self.cell_size = self.ImageSize(cell_w, cell_h)
-        self.grid_size = self.ImageSize(cell_w*cols, cell_h*rows)
+        self.cell_size = ImageSize(cell_w, cell_h)
+        self.grid_size = ImageSize(cell_w * cols, cell_h * rows)
 ```
 
 Finally, `Pillow` gives full control on image serializations:
 
 ```python
-    def upload_summary_as_jpeg(self, image: Image):
+    def upload_summary_as_jpeg(self, image: PilImage):
         mem_file = BytesIO()
-        image_type = 'jpeg'
+        image_type = "jpeg"
         jpeg_save_parameters = dict(optimize=True, progressive=True)
         image.save(mem_file, format=image_type, **jpeg_save_parameters)
 
@@ -811,16 +796,17 @@ import os
 
 from video_processor import VideoProcessor
 
-SUMMARY_BUCKET = os.getenv('SUMMARY_BUCKET', '')
-assert SUMMARY_BUCKET, 'Undefined SUMMARY_BUCKET environment variable'
+SUMMARY_BUCKET = os.getenv("SUMMARY_BUCKET", "")
+assert SUMMARY_BUCKET, "Undefined SUMMARY_BUCKET environment variable"
 
-if __name__ == '__main__':
-    """ Only for local tests """
+if __name__ == "__main__":
+    # Local tests only (service account needed)
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('annot_uri',
-                        type=str,
-                        help='gs://annotation_bucket/path/to/video.ext.json')
+    parser.add_argument(
+        "annot_uri", type=str, help="gs://annotation_bucket/path/to/video.ext.json"
+    )
     args = parser.parse_args()
     VideoProcessor.generate_summary(args.annot_uri, SUMMARY_BUCKET)
 ```
@@ -859,10 +845,10 @@ rm -rf venv
 
 ```python
 def gcf_generate_summary(data, context):
-    """ Cloud Function triggered by a new Cloud Storage object """
-    annotation_bucket = data['bucket']
-    path_to_annotation = data['name']
-    annot_uri = f'gs://{annotation_bucket}/{path_to_annotation}'
+    """Cloud Function triggered by a new Cloud Storage object"""
+    annotation_bucket = data["bucket"]
+    path_to_annotation = data["name"]
+    annot_uri = f"gs://{annotation_bucket}/{path_to_annotation}"
     VideoProcessor.generate_summary(annot_uri, SUMMARY_BUCKET)
 ```
 
@@ -880,7 +866,7 @@ GCF_TIMEOUT="540s"
 GCF_MEMORY="512MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS \
@@ -992,14 +978,14 @@ Now, the icing on the cake (or the "cherry on the pie" as we say in French)...
 
 ```python
 def gcf_detect_shots_http(request):
-    """ Cloud Function triggered by an HTTP GET request """
-    if request.method != 'GET':
-        return ('Please use a GET request', 403)
-    if not request.args or 'video_uri' not in request.args:
+    """Cloud Function triggered by an HTTP GET request"""
+    if request.method != "GET":
+        return ("Please use a GET request", 403)
+    if not request.args or "video_uri" not in request.args:
         return ('Please specify a "video_uri" parameter', 400)
-    video_uri = request.args['video_uri']
+    video_uri = request.args["video_uri"]
     launch_shot_detection(video_uri, ANNOTATION_BUCKET)
-    return f'Launched shot detection for video_uri <{video_uri}>'
+    return f"Launched shot detection for <{video_uri}>"
 ```
 
 > Note: This is the same code as `gcf_detect_shots` with the video URI parameter provided from a GET request.
@@ -1015,7 +1001,7 @@ GCF_ENV_VARS="ANNOTATION_BUCKET=$ANNOTATION_BUCKET"
 GCF_MEMORY="128MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS \
@@ -1036,50 +1022,34 @@ Add an `animated` option in the core function:
 ```diff
 class VideoProcessor:
     @staticmethod
-    def generate_summary(annot_uri: str, output_bucket: str, animated=False):
+-   def generate_summary(annot_uri: str, output_bucket: str):
++   def generate_summary(annot_uri: str, output_bucket: str, animated=False):
         """ Generate a video summary from video shot annotations """
         try:
             with StorageHelper(annot_uri, output_bucket) as storage:
                 with VideoProcessor(storage) as video_proc:
-                    print('Generating summary...')
+                    print("Generating summary...")
 -                   image = video_proc.render_summary()
 -                   video_proc.upload_summary_as_jpeg(image)
 +                   if animated:
 +                       video_proc.generate_summary_animations()
 +                   else:
 +                       video_proc.generate_summary_stills()
-        except:
-            logging.exception(
-                'Could not generate summary from shot annotations <%s>',
-                annot_uri)
+        except Exception:
+            logging.exception("Could not generate summary from <%s>", annot_uri)
 ```
 
 Define the formats you're interested in generating:
 
 ```python
-    class ImageFormat:
-        # See https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html
-        image_format: str
-        save_parameters: Dict  # Make a copy if updated
+ImageFormat = NamedTuple("ImageFormat", [("type", str), ("save_parameters", dict)])
 
-    class ImageJpeg(ImageFormat):
-        image_format = 'jpeg'
-        save_parameters = dict(optimize=True, progressive=True)
-
-    class ImageGif(ImageFormat):
-        image_format = 'gif'
-        save_parameters = dict(optimize=True)
-
-    class ImagePng(ImageFormat):
-        image_format = 'png'
-        save_parameters = dict(optimize=True)
-
-    class ImageWebP(ImageFormat):
-        image_format = 'webp'
-        save_parameters = dict(lossless=False, quality=80, method=1)
-
-    SUMMARY_STILL_FORMATS = (ImageJpeg, ImagePng, ImageWebP)
-    SUMMARY_ANIMATED_FORMATS = (ImageGif, ImagePng, ImageWebP)
+IMAGE_JPEG = ImageFormat("jpeg", dict(optimize=True, progressive=True))
+IMAGE_GIF = ImageFormat("gif", dict(optimize=True))
+IMAGE_PNG = ImageFormat("png", dict(optimize=True))
+IMAGE_WEBP = ImageFormat("webp", dict(lossless=False, quality=80, method=1))
+SUMMARY_STILL_FORMATS = (IMAGE_JPEG, IMAGE_PNG, IMAGE_WEBP)
+SUMMARY_ANIMATED_FORMATS = (IMAGE_GIF, IMAGE_PNG, IMAGE_WEBP)
 ```
 
 Add support to generate still and animated summaries in different formats:
@@ -1087,40 +1057,37 @@ Add support to generate still and animated summaries in different formats:
 ```python
     def generate_summary_stills(self):
         image = self.render_summary()
-        for image_format in self.SUMMARY_STILL_FORMATS:
+        for image_format in SUMMARY_STILL_FORMATS:
             self.upload_summary([image], image_format)
 
     def generate_summary_animations(self):
-        frame_count = self.ANIMATION_FRAMES
+        frame_count = ANIMATION_FRAMES
         images = []
         for frame_index in range(frame_count):
-            shot_ratio = (frame_index+1) / (frame_count+1)
-            print(f'shot_ratio: {shot_ratio:.0%}')
+            shot_ratio = (frame_index + 1) / (frame_count + 1)
+            print(f"shot_ratio: {shot_ratio:.0%}")
             image = self.render_summary(shot_ratio)
             images.append(image)
-        for image_format in self.SUMMARY_ANIMATED_FORMATS:
+        for image_format in SUMMARY_ANIMATED_FORMATS:
             self.upload_summary(images, image_format)
 ```
 
 The serialization can still take place in a single function:
 
 ```python
-    def upload_summary(self,
-                       images: List['Image'],
-                       image_format: Type[ImageFormat]):
+    def upload_summary(self, images: list[PilImage], image_format: ImageFormat):
         if not images:
-            raise RuntimeError('Empty image list')
+            raise RuntimeError("Empty image list")
         mem_file = BytesIO()
-        image_type = image_format.image_format
-        save_parameters = dict(image_format.save_parameters)  # Copy
-        animated = 1 < len(images)
-        if animated:
-            save_parameters.update(dict(
+        image_type = image_format.type
+        save_parameters = image_format.save_parameters.copy()
+        if animated := 1 < len(images):
+            save_parameters |= dict(
                 save_all=True,
                 append_images=images[1:],
-                duration=self.ANIMATION_FRAME_DURATION_MS,
+                duration=ANIMATION_FRAME_DURATION_MS,
                 loop=0,  # Infinite loop
-            ))
+            )
         images[0].save(mem_file, format=image_type, **save_parameters)
 
         image_bytes = mem_file.getvalue()
@@ -1138,16 +1105,17 @@ class StorageHelper:
 +    def upload_summary(self, image_bytes: bytes, image_type: str, animated=False):
 +       path = self.summary_path(image_type, animated)
         blob = self.upload_bucket.blob(path.as_posix())
-        content_type = f'image/{image_type}'
-        print(f'Uploading -> {blob.name}')
+        content_type = f"image/{image_type}"
+        print(f"Uploading -> {blob.name}")
         blob.upload_from_string(image_bytes, content_type)
 
+-   def summary_path(self, image_type: str) -> Path:
 +   def summary_path(self, image_type: str, animated=False) -> Path:
         video_name = self.video_path.name
         shot_count = self.shot_count()
--       suffix = f'summary{shot_count:03d}.{image_type}'
-+       still_or_anim = 'anim' if animated else 'still'
-+       suffix = f'summary{shot_count:03d}_{still_or_anim}.{image_type}'
+-       suffix = f"summary{shot_count:03d}.{image_type}"
++       still_or_anim = "anim" if animated else "still"
++       suffix = f"summary{shot_count:03d}_{still_or_anim}.{image_type}"
         summary_name = f'{video_name}.{suffix}'
         return Path(self.video_path.parent, summary_name)
 ```
@@ -1156,7 +1124,7 @@ And finally, add an `ANIMATED` optional environment variable in the entry point:
 
 ```diff
 ...
-+ANIMATED = os.getenv('ANIMATED', '0') == '1'
++ANIMATED = os.getenv("ANIMATED", "0") == "1"
 
 def gcf_generate_summary(data, context):
     ...
@@ -1184,7 +1152,7 @@ GCF_TIMEOUT="540s"
 GCF_MEMORY="2048MB"
 
 gcloud functions deploy $GCF_NAME \
-  --runtime python37 \
+  --runtime python39 \
   --source $GCF_SOURCE \
   --entry-point $GCF_ENTRY_POINT \
   --update-env-vars $GCF_ENV_VARS1 \
@@ -1206,7 +1174,7 @@ The HTTP endpoint lets you trigger the pipeline with a GET request:
 
 ```bash
 GCF_NAME="gcf1_detect_shots_http"
-VIDEO_URI="gs://cloudmleap/video/next/visionapi.mp4"
+VIDEO_URI="gs://cloud-samples-data/video/visionapi.mp4"
 GCF_URL="https://$GCF_REGION-$PROJECT_ID.cloudfunctions.net/$GCF_NAME?video_uri=$VIDEO_URI"
 
 curl $GCF_URL -H "Authorization: bearer $(gcloud auth print-identity-token)"
