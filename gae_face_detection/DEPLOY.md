@@ -65,7 +65,7 @@ gcloud services enable vision.googleapis.com
 ### App Engine
 
 ```bash
-# Create an App Engine app within the current cloud project
+# Create an App Engine app for the current cloud project
 gcloud app create --region $GAE_REGION
 ```
 
@@ -144,8 +144,12 @@ Several options have been progressively added to the backend. Has our code base 
 ```bash
 first_line_after_licence=16
 find $PROJECT_SRC -name "*.py" -exec tail -n +$first_line_after_licence {} \; | grep -v "^$" | wc -l
+```
 
-279
+Number of Python lines:
+
+```text
+278
 ```
 
 - Image analysis and processing, with different options, run in less than 300 lines of readable Python.

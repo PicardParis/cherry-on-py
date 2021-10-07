@@ -74,8 +74,11 @@ Here is what you get in the [Cloud Console](https://console.cloud.google.com/sto
 # Enable the Video Intelligence and Cloud Functions APIs
 gcloud services enable \
   videointelligence.googleapis.com \
-  cloudfunctions.googleapis.com
+  cloudfunctions.googleapis.com \
+  cloudbuild.googleapis.com
 ```
+
+> Note: Cloud Build generates container images for Cloud Functions upon deployment.
 
 ### Source code
 
@@ -253,12 +256,19 @@ gcloud projects delete $PROJECT_ID
 
 ## ➕ One more thing
 
+How big is the code base?
+
 ```bash
 first_line_after_licence=16
 find $PROJECT_SRC -name '*.py' -exec tail -n +$first_line_after_licence {} \; | grep -v "^$" | wc -l
-299
 ```
 
-- You did everything in less than 300 lines of Python.
+Number of Python lines:
+
+```text
+298
+```
+
+- Video analysis and processing, with different options, run in less than 300 lines of readable Python.
 - Less lines, less bugs!
 - 🔥🐍 **Mission accomplished!** 🐍🔥

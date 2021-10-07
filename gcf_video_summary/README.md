@@ -230,17 +230,20 @@ storage-api.googleapis.com        Google Cloud Storage JSON API
 storage-component.googleapis.com  Cloud Storage
 ```
 
-Enable the Video Intelligence and Cloud Functions APIs:
+Enable the Video Intelligence, Cloud Functions, and Cloud Build APIs:
 
 ```bash
 gcloud services enable \
   videointelligence.googleapis.com \
-  cloudfunctions.googleapis.com
+  cloudfunctions.googleapis.com \
+  cloudbuild.googleapis.com
 ```
 
 ```text
 Operation "operations/acf..." finished successfully.
 ```
+
+> Note: Cloud Build generates container images for Cloud Functions upon deployment.
 
 ### Source code
 
@@ -1181,7 +1184,7 @@ curl $GCF_URL -H "Authorization: bearer $(gcloud auth print-identity-token)"
 ```
 
 ```text
-Launched shot detection for video_uri <VIDEO_URI>
+Launched shot detection for <VIDEO_URI>
 ```
 
 > Note: The test video `<visionapi.mp4>` is located in an external bucket but is publicly accessible.
@@ -1226,13 +1229,22 @@ gcloud projects delete $PROJECT_ID
 
 ## ➕ One more thing
 
+How big is the code base?
+
 ```bash
 first_line_after_licence=16
 find $PROJECT_SRC -name '*.py' -exec tail -n +$first_line_after_licence {} \; | grep -v "^$" | wc -l
-289
 ```
 
-You did everything in under 300 lines of Python. Less lines, less bugs! 🔥🐍 **Mission accomplished!** 🐍🔥
+Number of Python lines:
+
+```text
+262
+```
+
+- Video analysis and processing, with different options, run in less than 300 lines of readable Python.
+- Less lines, less bugs!
+- 🔥🐍 **Mission accomplished!** 🐍🔥
 
 ## 🖖 See you
 
