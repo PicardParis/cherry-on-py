@@ -5,4 +5,4 @@ google-cloud-storage==1.42.3
 opencv-python-headless==4.5.3.56
 
 # https://pypi.org/project/Pillow/
-Pillow==8.3.2
+Pillow==9.0.0
