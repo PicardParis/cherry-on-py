@@ -2,7 +2,7 @@
 google-cloud-vision==2.4.4
 
 # https://pypi.org/project/Pillow
-Pillow==9.0.0
+Pillow==9.0.1
 
 # https://pypi.org/project/Flask
 Flask==2.0.2
