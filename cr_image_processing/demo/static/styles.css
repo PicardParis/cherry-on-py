@@ -1,0 +1,52 @@
+:root {
+    --text-color: #3C4043;
+    --frame-bg-color: #E8EAED;
+}
+
+body {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    color: var(--text-color);
+}
+
+h1 {
+    text-align: center;
+}
+
+.drop-zone-active {
+    background-color: #c4e2cc;
+}
+
+sl-card, sl-button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+sl-card::part(base) {
+    background-color: var(--frame-bg-color);
+}
+
+sl-spinner {
+    font-size: 3rem;
+    --track-width: 6px;
+}
+
+sl-image-comparer::part(divider), sl-image-comparer::part(handle) {
+    background-color: var(--frame-bg-color);
+}
+
+#before-image, #after-image {
+    max-height: 70vh;
+}
+
+.spinner-working {
+    --indicator-color: #4285F4;
+}
+
+.spinner-finishing {
+    --indicator-color: #34A853;
+}
+
+.spinner-error {
+    --indicator-color: red;
+}
