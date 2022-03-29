@@ -1,8 +1,8 @@
 # https://pypi.org/project/google-cloud-vision
-google-cloud-vision==2.4.4
+google-cloud-vision==2.7.2
 
 # https://pypi.org/project/Pillow
-Pillow==9.0.0
+Pillow==9.0.1
 
 # https://pypi.org/project/Flask
-Flask==2.0.2
+Flask==2.1.0

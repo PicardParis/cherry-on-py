@@ -70,11 +70,11 @@ This is one of many possible architectures. The advantages of this one are the f
 Define the dependencies in the `requirements.txt` file:
 
 ```bash
-google-cloud-vision==2.4.4
+google-cloud-vision==2.7.2
 
-Pillow==8.3.2
+Pillow==9.0.1
 
-Flask==2.0.2
+Flask==2.1.0
 ```
 
 > Notes:

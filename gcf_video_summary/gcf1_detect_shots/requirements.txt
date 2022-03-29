@@ -1,5 +1,5 @@
-# https://pypi.org/project/google-cloud-storage/
-google-cloud-storage==1.42.3
+# https://pypi.org/project/google-cloud-storage
+google-cloud-storage==2.2.1
 
-# https://pypi.org/project/google-cloud-videointelligence/
-google-cloud-videointelligence==2.3.3
+# https://pypi.org/project/google-cloud-videointelligence
+google-cloud-videointelligence==2.6.1
