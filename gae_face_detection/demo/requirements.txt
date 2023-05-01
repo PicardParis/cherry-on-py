@@ -5,4 +5,4 @@ google-cloud-vision==2.7.2
 Pillow==9.0.1
 
 # https://pypi.org/project/Flask
-Flask==2.1.0
+Flask==2.3.2
